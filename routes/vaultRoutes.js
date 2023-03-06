@@ -10,6 +10,6 @@ const { verifyToken } = require("../middlewares/authMiddleware");
 
 router.get("/getAllVaults", verifyToken, getAllVaults);
 router.post("/addVault", verifyToken, addVault);
-router.get("/displayVault", verifyToken, displayVault);
+router.get("/displayVault/:vId", verifyToken, displayVault);
 
 module.exports = router;

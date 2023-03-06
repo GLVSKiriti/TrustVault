@@ -105,6 +105,8 @@ exports.addVault = (req, res) => {
 
 exports.displayVault = (req, res) => {
   const { vaultSecretKey } = req.body;
+  const vId = req.params.vId;
+  // const u_id = req.uid;
 
   client2
     .query(`SELECT * FROM server_keys WHERE s_id = 1;`)
@@ -115,12 +117,48 @@ exports.displayVault = (req, res) => {
       const hash = cryptoJs.SHA3(Final_key2);
       const hash_final_key = hash.toString(cryptoJs.enc.Hex);
 
-      client.query(`SELECT * FROM vaults WHERE u_id = 3;`).then((data) => {
-        filter = data.rows[2].data;
-        console.log(filter);
-        const decrypted_data = cryptoJs.AES.decrypt(filter, hash_final_key);
-        const decrypted_data2 = decrypted_data.toString(cryptoJs.enc.Utf8);
-        console.log(decrypted_data2);
+      client
+        .query(`SELECT * FROM vaults WHERE v_id = ${vId};`)
+        .then((data) => {
+          filterData = data.rows[0];
+          vaultData = filterData.data;
+
+          client
+            .query(`SELECT * FROM vault_nom WHERE v_id = ${vId};`)
+            .then((data) => {
+              filterData2 = data.rows;
+              const vault_data = cryptoJs.AES.decrypt(
+                vaultData,
+                hash_final_key
+              );
+              const vault_data2 = vault_data.toString(cryptoJs.enc.Utf8);
+
+              res.status(200).json({
+                v_id: vId,
+                v_name: filterData.v_name,
+                data: vault_data2,
+                description: filterData.description,
+                nominee: filterData2,
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+              res.status(500).json({
+                error: "Database Error Occurred",
+              });
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json({
+            error: "Database error Occurred",
+          });
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: "Database2 error Occurred",
       });
     });
 };
