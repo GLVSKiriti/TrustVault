@@ -2,32 +2,35 @@ const { client, client2 } = require("../configs/database");
 const cryptoJs = require("crypto-js");
 const bcrypt = require("bcrypt");
 
-exports.getAllVaults = (req, res) => {
-  client
-    .query(
+exports.getAllVaults = async (req, res) => {
+  try {
+    const data = await client.query(
       `SELECT * FROM vaults natural join users WHERE email = '${req.email}';`
-    )
-    .then((data) => {
-      // console.log(data.rows);
-      const vaultData = data.rows;
-      const filteredData = vaultData.map((note) => {
+    );
+    const vaultdata = data.rows;
+    const filterData = await Promise.all(
+      vaultdata.map(async (note) => {
+        const data2 = await client.query(
+          `SELECT * FROM vault_nom WHERE v_id = ${note.v_id};`
+        );
+        nomDetails = data2.rows;
         return {
           v_id: note.v_id,
           v_name: note.v_name,
+          nomDetails: nomDetails,
         };
-      });
-      res.status(200).json({
-        message: "Success",
-        data: filteredData,
-      });
-      // console.log(filteredData, typeof filteredData);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: "Database Error Occurred",
-      });
+      })
+    );
+    res.status(200).json({
+      message: "Success",
+      filterData: filterData,
     });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: "Database Error Occurred",
+    });
+  }
 };
 
 exports.addVault = (req, res) => {
