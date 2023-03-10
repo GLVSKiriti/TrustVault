@@ -217,3 +217,36 @@ exports.updateVault = async (req, res) => {
     });
   }
 };
+
+exports.deleteVault = async (req, res) => {
+  //He should enter his login password to delete the vault
+  const { password } = req.body;
+  const u_id = req.uid;
+  const vId = req.params.vId;
+  try {
+    const data = await client.query(
+      `SELECT * FROM users WHERE u_id = ${u_id};`
+    );
+    const hashPass = data.rows[0].password;
+
+    result = await bcrypt.compare(password, hashPass);
+    if (result === true) {
+      await client.query(`DELETE FROM vault_nom WHERE v_id = ${vId};`);
+      await client.query(
+        `DELETE FROM vaults WHERE u_id = ${u_id} AND v_id = ${vId};`
+      );
+      res.status(200).json({
+        message: "Succefully Vault Is Deleted",
+      });
+    } else {
+      res.status(400).json({
+        error: "Enter the correct password!!",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: "Database Error Occurred",
+    });
+  }
+};
