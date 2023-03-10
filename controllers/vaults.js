@@ -136,13 +136,19 @@ exports.displayVault = (req, res) => {
               );
               const vault_data2 = vault_data.toString(cryptoJs.enc.Utf8);
 
-              res.status(200).json({
-                v_id: vId,
-                v_name: filterData.v_name,
-                data: vault_data2,
-                description: filterData.description,
-                nominee: filterData2,
-              });
+              if (vault_data2 === "") {
+                res.status(500).json({
+                  error: "Wrong Secret Key",
+                });
+              } else {
+                res.status(200).json({
+                  v_id: vId,
+                  v_name: filterData.v_name,
+                  data: vault_data2,
+                  description: filterData.description,
+                  nominee: filterData2,
+                });
+              }
             })
             .catch((err) => {
               console.log(err);
@@ -164,4 +170,50 @@ exports.displayVault = (req, res) => {
         error: "Database2 error Occurred",
       });
     });
+};
+
+exports.updateVault = async (req, res) => {
+  //updateVault is also same as addVault but it will update the vault details in the
+  //database with the updated values in that palce
+  //Here firstly on frontend when he clicks on edit button it should
+  //once fetch details from dislay vault and put those details on place holder of that value
+  //so without changing details then placeholder values will be the body request
+  //if they cancel the editing then no request will be send to updateVault
+  //here vault secret key is again asked while accessing the route
+  const { v_name, data, nomineeDetails, vaultSecretKey, description } =
+    req.body;
+  const vId = req.params.vId;
+  const u_id = req.uid;
+
+  try {
+    const skey = await client2.query(
+      `SELECT * FROM server_keys WHERE s_id = 1;`
+    );
+    const server_key = skey.rows[0].key;
+    const Final_key2 = server_key + vaultSecretKey + process.env.PEPPER;
+    const hash = cryptoJs.SHA3(Final_key2);
+    const hash_final_key = hash.toString(cryptoJs.enc.Hex);
+    const encrypted_data = cryptoJs.AES.encrypt(data, hash_final_key);
+
+    await client.query(
+      `UPDATE vaults SET v_name = '${v_name}',data = '${encrypted_data}',description = '${description}' WHERE u_id = ${u_id} AND v_id = ${vId};`
+    );
+
+    await client.query(`DELETE FROM vault_nom WHERE v_id = ${vId};`);
+
+    nomineeDetails.forEach(async (nominee) => {
+      await client.query(
+        `INSERT INTO vault_nom (v_id,n_email,n_name,n_ph_no) VALUES (${vId},'${nominee.n_email}','${nominee.n_name}','${nominee.n_ph_no}');`
+      );
+    });
+
+    res.status(200).json({
+      message: "Updated Successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: "Database Error Occurred",
+    });
+  }
 };
