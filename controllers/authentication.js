@@ -39,7 +39,7 @@ exports.signup = (req, res) => {
 
           client
             .query(
-              `INSERT INTO users (username,email,password) VALUES ('${user.username}','${user.email}','${user.password}');`
+              `INSERT INTO users (username,email,password,last_login_time) VALUES ('${user.username}','${user.email}','${user.password}',CURRENT_TIMESTAMP);`
             )
             .then((data) => {
               res.status(200).json({
@@ -82,6 +82,16 @@ exports.signin = (req, res) => {
               error: "Internal Server Error Occurred",
             });
           } else if (result === true) {
+            client
+              .query(
+                `UPDATE users SET last_login_time = CURRENT_TIMESTAMP WHERE u_id = ${userData[0].u_id};`
+              )
+              .then()
+              .catch((err) => {
+                res.status(500).json({
+                  error: "Database Error Occurred!!",
+                });
+              });
             const token = jwt.sign(
               {
                 email: email,
