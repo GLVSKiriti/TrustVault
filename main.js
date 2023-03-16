@@ -5,6 +5,7 @@ const cors = require("cors");
 const { client, client2 } = require("./configs/database");
 const authRoutes = require("./routes/authRoutes");
 const vaultRoutes = require("./routes/vaultRoutes");
+const cronJob = require("./cronJobs/checkUser");
 
 const app = express();
 
@@ -33,6 +34,9 @@ app.get("/", (req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/vault", vaultRoutes);
+
+cronJob.checkUser();
+cronJob.checkUserP2();
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
