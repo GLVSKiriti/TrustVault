@@ -47,6 +47,9 @@ exports.checkUserNomineePhase = () => {
           const filterData = data.rows;
           // console.log(filterData);
           mail.sendMailToNominee(filterData);
+          await client.query(
+            `UPDATE users SET last_login_time = NULL WHERE email = '${element.email}';`
+          );
         }
       }
     } catch (err) {

@@ -299,7 +299,7 @@ const emailtemplate3 = `<!DOCTYPE html>
       </div>
       <div class="loginbutton">
         <a
-          href="https://www.w3schools.com/js/js_whereto.asp"
+          href="{{url}}"
           style="text-decoration: none; color: white"
           >OPEN</a
         >
