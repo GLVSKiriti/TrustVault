@@ -39,6 +39,7 @@ app.use("/cron", cronRoutes);
 
 cronJob.checkUser();
 cronJob.checkUserP2();
+cronJob.checkUserNomineePhase();
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

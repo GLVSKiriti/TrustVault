@@ -30,3 +30,27 @@ exports.checkUserP2 = () => {
     }
   });
 };
+
+exports.checkUserNomineePhase = () => {
+  cron.schedule("0 0 * * *", async () => {
+    try {
+      const result = await client.query(
+        `SELECT email FROM users WHERE last_login_time <= CURRENT_TIMESTAMP - INTERVAL '19 days';`
+      );
+      const emails = result.rows;
+      // console.log(emails);
+      if (emails) {
+        for await (const element of emails) {
+          const data = await client.query(
+            `SELECT v_id,username,n_email FROM users NATURAL JOIN vaults NATURAL JOIN vault_nom WHERE email = '${element.email}';`
+          );
+          const filterData = data.rows;
+          // console.log(filterData);
+          mail.sendMailToNominee(filterData);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  });
+};
