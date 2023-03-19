@@ -84,7 +84,7 @@ exports.sendMailToNominee = async (filterData) => {
 
     let htmlcontent = emailtemplate3
       .replace("{{username}}", ele.username)
-      .replace("{{url}}", `http://localhost:4000/nominee/${v_id}`);
+      .replace("{{url}}", `http://localhost:4000/nominee?v_id = ${v_id}`);
 
     let details = {
       from: "trustvault2023sem4@gmail.com",
