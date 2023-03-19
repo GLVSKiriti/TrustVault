@@ -1,6 +1,7 @@
-const { client } = require("../configs/database");
+const { client, client2 } = require("../configs/database");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const cryptoJs = require("crypto-js");
 const { emailtemplate4 } = require("../assets/htmlvars");
 
 exports.email = async (req, res) => {
@@ -62,6 +63,7 @@ exports.email = async (req, res) => {
 exports.otpVerify = (req, res) => {
   const token = req.headers.authorization;
   const inp_otp = req.body.otp;
+  const v_id = req.params.v_id;
 
   jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
     if (err) {
@@ -78,9 +80,16 @@ exports.otpVerify = (req, res) => {
     );
     otp = otp.rows[0].otp;
     // console.log(otp);
+
+    let description = await client.query(
+      `SELECT description FROM vaults WHERE v_id = ${v_id};`
+    );
+    description = description.rows[0].description;
+
     if (otp === inp_otp) {
       res.status(200).json({
         message: "Success",
+        description: description,
       });
     } else {
       res.status(400).json({
@@ -90,4 +99,50 @@ exports.otpVerify = (req, res) => {
   });
 };
 
-exports.vaultData = (req, res) => {};
+exports.vaultData = async (req, res) => {
+  const { vault_secret_key } = req.body;
+  const v_id = req.params.v_id;
+
+  try {
+    let server_key = await client2.query(
+      `SELECT * FROM server_keys WHERE s_id = 1;`
+    );
+    server_key = server_key.rows[0].key;
+
+    let final_key = server_key + vault_secret_key + process.env.PEPPER;
+    final_key = cryptoJs.SHA3(final_key);
+    final_key = final_key.toString(cryptoJs.enc.Hex);
+
+    let vault_data = await client.query(
+      `SELECT * FROM vaults WHERE v_id = '${v_id}';`
+    );
+    vault_data = vault_data.rows[0];
+    vault_data = vault_data.data;
+
+    vault_data = cryptoJs.AES.decrypt(vault_data, final_key);
+    vault_data = vault_data.toString(cryptoJs.enc.Utf8);
+
+    if (vault_data === "") {
+      res.status(400).json({
+        error: "Wrong Secret Key Entered",
+      });
+    } else {
+      res.status(200).json({
+        vault_data: vault_data,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: "Database Error Occurred",
+    });
+  }
+};
+
+//in email function sends the otp to mail
+
+//now user enters the otp now if it is correct vault_key description will be sent as a response(otpVerify)
+
+//now user enters vault_secret_key if it is correct then we return vault_data
+
+//Is making jwt token verification as a middleware before vaultData function runs necessary??
