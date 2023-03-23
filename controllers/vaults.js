@@ -11,13 +11,13 @@ exports.getAllVaults = async (req, res) => {
     const filterData = await Promise.all(
       vaultdata.map(async (note) => {
         const data2 = await client.query(
-          `SELECT * FROM vault_nom WHERE v_id = ${note.v_id};`
+          `SELECT n_name FROM vault_nom WHERE v_id = ${note.v_id};`
         );
-        nomDetails = data2.rows;
+        n_name = data2.rows;
         return {
           v_id: note.v_id,
           v_name: note.v_name,
-          nomDetails: nomDetails,
+          n_name: n_name,
         };
       })
     );
