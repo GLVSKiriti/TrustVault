@@ -3,14 +3,15 @@ const { client, client2 } = require("../configs/database");
 
 exports.verifyToken = (req, res, next) => {
   const token = req.headers.authorization;
-
+  // console.log(token);
   jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
     if (err) {
+      console.log(err);
       res.status(400).json({
-        error: "Server Error Occurred",
+        error: "Server Error Occurred From Middleware",
       });
     }
-
+    // console.log(decoded.email);
     const userEmail = decoded.email;
 
     client

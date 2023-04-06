@@ -36,8 +36,8 @@ app.get("/", (req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/vault", vaultRoutes);
-app.use("/cron", cronRoutes);
-app.use("/nominee", nomineeRoutes);
+app.use("/cron", cronRoutes); //completed
+app.use("/nominee", nomineeRoutes); //completed
 
 cronJob.checkUser();
 cronJob.checkUserP2();

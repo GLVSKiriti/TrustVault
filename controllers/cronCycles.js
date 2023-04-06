@@ -19,7 +19,7 @@ exports.statusCheck = async (req, res) => {
         message: "Succefully Status Verified",
       });
     } else {
-      res.status(400).json({
+      res.status(200).json({
         error: "Wrong Password!!!",
       });
     }

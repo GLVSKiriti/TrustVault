@@ -33,6 +33,9 @@ exports.email = async (req, res) => {
     if (err) {
       console.log(err);
       console.log("There is an error");
+      res.status(200).json({
+        message: "Enter a valid mail",
+      });
     } else {
       console.log("Email has been sent");
       await client.query(
@@ -63,7 +66,8 @@ exports.email = async (req, res) => {
 exports.otpVerify = (req, res) => {
   const token = req.headers.authorization;
   const inp_otp = req.body.otp;
-  const v_id = req.params.v_id;
+  // const v_id = req.params.v_id;
+  const v_id = req.body.v_id;
 
   jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
     if (err) {
@@ -100,8 +104,7 @@ exports.otpVerify = (req, res) => {
 };
 
 exports.vaultData = async (req, res) => {
-  const { vault_secret_key } = req.body;
-  const v_id = req.params.v_id;
+  const { vault_secret_key, v_id } = req.body;
 
   try {
     let server_key = await client2.query(

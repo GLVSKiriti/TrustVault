@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 exports.getAllVaults = async (req, res) => {
   try {
     const data = await client.query(
-      `SELECT * FROM vaults natural join users WHERE email = '${req.email}';`
+      `SELECT * FROM vaults natural join users WHERE email = '${req.email}' ORDER BY v_id;`
     );
     const vaultdata = data.rows;
     const filterData = await Promise.all(
@@ -107,8 +107,8 @@ exports.addVault = (req, res) => {
 };
 
 exports.displayVault = (req, res) => {
-  const { vaultSecretKey } = req.body;
-  const vId = req.params.vId;
+  const { vaultSecretKey, vId } = req.body;
+  // const vId = req.params.vId;
   // const u_id = req.uid;
 
   client2
@@ -180,8 +180,7 @@ exports.updateVault = async (req, res) => {
   //so without changing details then placeholder values will be the body request
   //if they cancel the editing then no request will be send to updateVault
   //here vault secret key is again asked while accessing the route
-  const { v_name, data, nomineeDetails, vaultSecretKey, description } =
-    req.body;
+  const { v_name, data, nominee, vaultSecretKey, description } = req.body;
   const vId = req.params.vId;
   const u_id = req.uid;
 
@@ -201,7 +200,7 @@ exports.updateVault = async (req, res) => {
 
     await client.query(`DELETE FROM vault_nom WHERE v_id = ${vId};`);
 
-    nomineeDetails.forEach(async (nominee) => {
+    nominee.forEach(async (nominee) => {
       await client.query(
         `INSERT INTO vault_nom (v_id,n_email,n_name,n_ph_no) VALUES (${vId},'${nominee.n_email}','${nominee.n_name}','${nominee.n_ph_no}');`
       );
@@ -223,6 +222,8 @@ exports.deleteVault = async (req, res) => {
   const { password } = req.body;
   const u_id = req.uid;
   const vId = req.params.vId;
+  // console.log(password);
+  // console.log(u_id);
   try {
     const data = await client.query(
       `SELECT * FROM users WHERE u_id = ${u_id};`
