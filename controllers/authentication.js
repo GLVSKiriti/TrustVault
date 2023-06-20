@@ -11,7 +11,7 @@ exports.signup = (req, res) => {
       isValid = data.rows;
 
       if (isValid.length !== 0) {
-        res.status(400).json({
+        res.status(204).json({
           error: "User already exists",
         });
       } else {

@@ -17,13 +17,13 @@ exports.sendMailToUser = (emails) => {
         pass: "gsfgtopjgiyzuitp",
       },
     });
-
+    let newone = emailtemplate2.replace("{{url}}", `http://localhost:3000/`);
     emails.forEach((element) => {
       let details = {
         from: "trustvault2023sem4@gmail.com",
         to: element.email,
         subject: "Status Verification",
-        html: emailtemplate,
+        html: newone,
       };
 
       mailTransporter.sendMail(details, (err) => {
@@ -47,12 +47,13 @@ exports.sendMailToUserP2 = (emails) => {
         pass: "gsfgtopjgiyzuitp",
       },
     });
+    let newone = emailtemplate2.replace("{{url}}", `http://localhost:3000/`);
     emails.forEach((element) => {
       let details = {
         from: "trustvault2023sem4@gmail.com",
         to: element.email,
         subject: "Status Verification",
-        html: emailtemplate2,
+        html: newone,
       };
 
       mailTransporter.sendMail(details, (err) => {
@@ -84,7 +85,7 @@ exports.sendMailToNominee = async (filterData) => {
 
     let htmlcontent = emailtemplate3
       .replace("{{username}}", ele.username)
-      .replace("{{url}}", `http://localhost:4000/nominee/otp?v_id = ${v_id}`);
+      .replace("{{url}}", `http://localhost:3000/nominee/otp?v_id=${v_id}`);
 
     let details = {
       from: "trustvault2023sem4@gmail.com",
