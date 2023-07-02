@@ -33,8 +33,8 @@ exports.email = async (req, res) => {
     if (err) {
       console.log(err);
       console.log("There is an error");
-      res.status(200).json({
-        message: "Enter a valid mail",
+      res.status(401).json({
+        error: "Enter a valid mail(has @ . com etc..)",
       });
     } else {
       console.log("Email has been sent");
@@ -72,7 +72,7 @@ exports.otpVerify = (req, res) => {
   jwt.verify(token, process.env.SECRET_KEY, async (err, decoded) => {
     if (err) {
       console.log(err);
-      res.status(400).json({
+      res.status(500).json({
         error: "Internal Server Occurred",
       });
     }
@@ -96,8 +96,8 @@ exports.otpVerify = (req, res) => {
         description: description,
       });
     } else {
-      res.status(400).json({
-        message: "Entered Incorrect OTP please enter again",
+      res.status(401).json({
+        error: "Entered Incorrect OTP please enter again",
       });
     }
   });
@@ -126,7 +126,7 @@ exports.vaultData = async (req, res) => {
     vault_data = vault_data.toString(cryptoJs.enc.Utf8);
 
     if (vault_data === "") {
-      res.status(400).json({
+      res.status(401).json({
         error: "Wrong Secret Key Entered",
       });
     } else {
