@@ -146,11 +146,11 @@ exports.updateVault = async (req, res) => {
 
     await client.query(`DELETE FROM vault_nom WHERE v_id = ${vId};`);
 
-    nominee.forEach(async (nominee) => {
+    for (const nom of nominee) {
       await client.query(
-        `INSERT INTO vault_nom (v_id,n_email,n_name,n_ph_no) VALUES (${vId},'${nominee.n_email}','${nominee.n_name}','${nominee.n_ph_no}');`
+        `INSERT INTO vault_nom (v_id,n_email,n_name,n_ph_no) VALUES (${vId},'${nom.n_email}','${nom.n_name}','${nom.n_ph_no}');`
       );
-    });
+    }
 
     res.status(200).json({
       message: "Updated Successfully",

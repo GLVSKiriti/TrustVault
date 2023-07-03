@@ -7,21 +7,25 @@ exports.statusCheck = async (req, res) => {
     const data = await client.query(
       `SELECT * FROM users WHERE email = '${email}';`
     );
-    const hash = data.rows[0].password;
-
-    const valid = await bcrypt.compare(password, hash);
-
-    if (valid) {
-      await client.query(
-        `UPDATE users SET last_login_time = CURRENT_TIMESTAMP WHERE email = '${email}';`
-      );
-      res.status(200).json({
-        message: "Succefully Status Verified",
+    if (!data.rowCount) {
+      res.status(401).json({
+        error: "Wrong Email!!!",
       });
     } else {
-      res.status(200).json({
-        error: "Wrong Password!!!",
-      });
+      const hash = data.rows[0].password;
+      const valid = await bcrypt.compare(password, hash);
+      if (valid) {
+        await client.query(
+          `UPDATE users SET last_login_time = CURRENT_TIMESTAMP WHERE email = '${email}';`
+        );
+        res.status(200).json({
+          message: "Succefully Status Verified",
+        });
+      } else {
+        res.status(401).json({
+          error: "Wrong Password!!!",
+        });
+      }
     }
   } catch (err) {
     console.log(err);
