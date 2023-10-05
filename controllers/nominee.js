@@ -15,15 +15,15 @@ exports.email = async (req, res) => {
   let mailTransporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "trustvault2023sem4@gmail.com",
-      pass: "gsfgtopjgiyzuitp",
+      user: process.env.TrustVaultUsername,
+      pass: process.env.TrustVaultPassword,
     },
   });
 
   let htmlcontent = emailtemplate4.replace("{{otp}}", otp);
 
   let details = {
-    from: "trustvault2023sem4@gmail.com",
+    from: process.env.TrustVaultUsername,
     to: email,
     subject: "OTP Verification",
     html: htmlcontent,

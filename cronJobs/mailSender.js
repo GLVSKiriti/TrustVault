@@ -13,14 +13,14 @@ exports.sendMailToUser = (emails) => {
     let mailTransporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "trustvault2023sem4@gmail.com",
-        pass: "gsfgtopjgiyzuitp",
+        user: process.env.TrustVaultUsername,
+        pass: process.env.TrustVaultPassword,
       },
     });
     let newone = emailtemplate2.replace("{{url}}", `http://localhost:3000/`);
     emails.forEach((element) => {
       let details = {
-        from: "trustvault2023sem4@gmail.com",
+        from: process.env.TrustVaultUsername,
         to: element.email,
         subject: "Status Verification",
         html: newone,
@@ -43,14 +43,14 @@ exports.sendMailToUserP2 = (emails) => {
     let mailTransporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "trustvault2023sem4@gmail.com",
-        pass: "gsfgtopjgiyzuitp",
+        user: process.env.TrustVaultUsername,
+        pass: process.env.TrustVaultPassword,
       },
     });
     let newone = emailtemplate2.replace("{{url}}", `http://localhost:3000/`);
     emails.forEach((element) => {
       let details = {
-        from: "trustvault2023sem4@gmail.com",
+        from: process.env.TrustVaultUsername,
         to: element.email,
         subject: "Status Verification",
         html: newone,
@@ -72,8 +72,8 @@ exports.sendMailToNominee = async (filterData) => {
   let mailTransporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "trustvault2023sem4@gmail.com",
-      pass: "gsfgtopjgiyzuitp",
+      user: process.env.TrustVaultUsername,
+      pass: process.env.TrustVaultPassword,
     },
   });
 
@@ -88,7 +88,7 @@ exports.sendMailToNominee = async (filterData) => {
       .replace("{{url}}", `http://localhost:3000/nominee/otp?v_id=${v_id}`);
 
     let details = {
-      from: "trustvault2023sem4@gmail.com",
+      from: process.env.TrustVaultUsername,
       to: n_email,
       subject: "You are a Nominee",
       html: htmlcontent,
