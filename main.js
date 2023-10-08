@@ -14,7 +14,10 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["https://trustvault.vercel.app/"],
+    origin: [
+      "https://trustvault.vercel.app",
+      /^https:\/\/trustvault\.vercel\.app$/,
+    ],
     methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true,
   })
