@@ -19,7 +19,7 @@ exports.signup = async (req, res) => {
         {
           email: email,
         },
-        process.env.Secret_Key
+        process.env.SECRET_KEY
       );
       //Hash Password
       bcrypt.hash(password, 10, async (err, hash) => {
@@ -77,7 +77,7 @@ exports.signin = async (req, res) => {
             {
               email: email,
             },
-            process.env.Secret_Key
+            process.env.SECRET_KEY
           );
 
           res.status(200).json({
