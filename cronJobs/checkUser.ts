@@ -1,8 +1,8 @@
-const cron = require("node-cron");
+import cron from "node-cron";
 const { client } = require("../configs/database");
 const mail = require("./mailSender");
 
-exports.checkUser = () => {
+const checkUser = () => {
   cron.schedule("0 0 * * *", async () => {
     try {
       const result = await client.query(
@@ -17,7 +17,7 @@ exports.checkUser = () => {
   });
 };
 
-exports.checkUserP2 = () => {
+const checkUserP2 = () => {
   cron.schedule("0 0 * * *", async () => {
     try {
       const result = await client.query(
@@ -31,7 +31,7 @@ exports.checkUserP2 = () => {
   });
 };
 
-exports.checkUserNomineePhase = () => {
+const checkUserNomineePhase = () => {
   cron.schedule("0 0 * * *", async () => {
     try {
       const result = await client.query(
@@ -57,3 +57,5 @@ exports.checkUserNomineePhase = () => {
     }
   });
 };
+
+export default { checkUser, checkUserP2, checkUserNomineePhase };

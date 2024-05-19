@@ -1,4 +1,5 @@
-const { Client } = require("pg");
+import { Client } from "pg";
+
 const client = new Client({
   user: process.env.PSQL_USER,
   host: process.env.PSQL_HOST,
@@ -15,4 +16,4 @@ const client2 = new Client({
   port: 5432,
 });
 
-module.exports = { client, client2 };
+export default { client, client2 };

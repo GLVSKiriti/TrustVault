@@ -1,13 +1,13 @@
-const dotenv = require("dotenv");
+import dotenv from "dotenv";
 dotenv.config();
-const express = require("express");
-const cors = require("cors");
-const { client, client2 } = require("./configs/database");
-const authRoutes = require("./routes/authRoutes");
-const vaultRoutes = require("./routes/vaultRoutes");
-const cronRoutes = require("./routes/cronRoutes");
-const nomineeRoutes = require("./routes/nomineeRoutes");
-const cronJob = require("./cronJobs/checkUser");
+import express from "express";
+import cors from "cors";
+import database from "./configs/database";
+import authRoutes from "./routes/authRoutes";
+import vaultRoutes from "./routes/vaultRoutes";
+import cronRoutes from "./routes/cronRoutes";
+import nomineeRoutes from "./routes/nomineeRoutes";
+import cronJob from "./cronJobs/checkUser";
 
 const app = express();
 
@@ -25,14 +25,14 @@ app.use(
 
 const port = process.env.PORT || 4000;
 
-client.connect((err) => {
+database.client.connect((err) => {
   if (err) {
     console.log(err);
   }
   console.log("Connected To Database!");
 });
 
-client2.connect((err) => {
+database.client2.connect((err) => {
   if (err) {
     console.log(err);
   }
@@ -45,8 +45,8 @@ app.get("/", (req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/vault", vaultRoutes);
-app.use("/cron", cronRoutes); //completed
-app.use("/nominee", nomineeRoutes); //completed
+app.use("/cron", cronRoutes);
+app.use("/nominee", nomineeRoutes);
 
 cronJob.checkUser();
 cronJob.checkUserP2();

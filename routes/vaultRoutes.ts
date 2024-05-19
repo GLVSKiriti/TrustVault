@@ -1,5 +1,4 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
 const {
   getAllVaults,
   addVault,
@@ -8,12 +7,13 @@ const {
   deleteVault,
 } = require("../controllers/vaults");
 
-const { verifyToken } = require("../middlewares/authMiddleware");
+import verifyToken from "../middlewares/authMiddleware";
 
+const router = express.Router();
 router.get("/getAllVaults", verifyToken, getAllVaults);
 router.post("/addVault", verifyToken, addVault);
 router.post("/displayVault", verifyToken, displayVault);
 router.put("/updateVault/:vId", verifyToken, updateVault);
 router.delete("/deleteVault/:vId", verifyToken, deleteVault);
 
-module.exports = router;
+export default router;
