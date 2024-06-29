@@ -1,23 +1,24 @@
-const jwt = require("jsonwebtoken");
-const { client, client2 } = require("../configs/database");
+import jwt from "jsonwebtoken";
+import database from "../configs/database";
 
-exports.verifyToken = (req, res, next) => {
-  const token = req.headers.authorization;
-  // console.log(token);
-  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+const verifyToken = (req: any, res: any, next: any) => {
+  const token: string = req.headers.authorization;
+  const secret = process.env.SECRET_KEY!;
+
+  jwt.verify(token, secret, (err, decoded) => {
     if (err) {
       console.log(err);
       res.status(400).json({
         error: "Server Error Occurred From Middleware",
       });
     }
-    // console.log(decoded.email);
-    const userEmail = decoded.email;
 
-    client
+    const userEmail: string = (decoded as jwt.JwtPayload).email;
+
+    database.client
       .query(`SELECT * FROM users WHERE email = '${userEmail}';`)
       .then((data) => {
-        isValid = data.rows;
+        const isValid = data.rows;
 
         if (isValid.length === 0) {
           res.status(400).json({ message: "Invalid Token" });
@@ -34,3 +35,5 @@ exports.verifyToken = (req, res, next) => {
       });
   });
 };
+
+export default verifyToken;

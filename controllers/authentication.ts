@@ -1,11 +1,11 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { client } = require("../configs/database");
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import database from "../configs/database";
 
-exports.signup = async (req, res) => {
+const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    let userData = await client.query(
+    let userData = await database.client.query(
       `SELECT * FROM users WHERE email = '${email}';`
     );
     userData = userData.rows;
@@ -35,7 +35,7 @@ exports.signup = async (req, res) => {
           password: hash,
         };
 
-        await client.query(
+        await database.client.query(
           `INSERT INTO users (username,email,password,last_login_time) VALUES ('${user.username}','${user.email}','${user.password}',CURRENT_TIMESTAMP);`
         );
 
@@ -52,10 +52,10 @@ exports.signup = async (req, res) => {
   }
 };
 
-exports.signin = async (req, res) => {
+const signin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    let userData = await client.query(
+    let userData = await database.client.query(
       `SELECT * FROM users WHERE email = '${email}';`
     );
     userData = userData.rows;
@@ -70,7 +70,7 @@ exports.signin = async (req, res) => {
             error: "Internal Server Error Occurred",
           });
         } else if (result === true) {
-          await client.query(
+          await database.client.query(
             `UPDATE users SET last_login_time = CURRENT_TIMESTAMP WHERE u_id = ${userData[0].u_id};`
           );
           const token = jwt.sign(
@@ -97,3 +97,5 @@ exports.signin = async (req, res) => {
     });
   }
 };
+
+export default { signin, signup };
